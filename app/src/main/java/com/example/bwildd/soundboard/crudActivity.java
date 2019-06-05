@@ -2,6 +2,7 @@ package com.example.bwildd.soundboard;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -15,6 +16,9 @@ import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.bwildd.soundboard.db.DatabaseHelper;
+
+import java.io.File;
 import java.io.IOException;
 
 import static android.app.PendingIntent.getActivity;
@@ -30,12 +34,14 @@ public class crudActivity extends MainActivity{
     private String mFileName;
     private int favoriteAsInt;
     public static final  String LOG_TAG = "Record_log";
+    DatabaseHelper mDatabaseHelper;
 
     @SuppressLint("ClickableViewAccessibility")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
+        mDatabaseHelper = new DatabaseHelper(this);
         btnSave = findViewById(R.id.btnSave);
         btnRecord = findViewById(R.id.btnRecord);
         lblRecord = findViewById(R.id.lblRecord);
@@ -82,6 +88,9 @@ public class crudActivity extends MainActivity{
                 } else {
                     toastMessage("put something in the field");
                 }
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -92,6 +101,7 @@ public class crudActivity extends MainActivity{
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/" + txtName.getText().toString() + ".3gp";
 
+        File mFile = new File(mFileName);
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
