@@ -10,11 +10,11 @@ import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.IOException;
 
 import static android.app.PendingIntent.getActivity;
@@ -24,9 +24,11 @@ public class crudActivity extends MainActivity{
     private Button btnSave;
     private Button btnRecord;
     private TextView lblRecord;
-    private TextView lblName;
+    private TextView txtName;
     private MediaRecorder mRecorder;
-    private String mFileName = null;
+    private CheckBox cbRecord;
+    private String mFileName;
+    private int favoriteAsInt;
     public static final  String LOG_TAG = "Record_log";
 
     @SuppressLint("ClickableViewAccessibility")
@@ -34,10 +36,11 @@ public class crudActivity extends MainActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        btnSave = (Button) findViewById(R.id.btnSave);
-        btnRecord = (Button) findViewById(R.id.btnRecord);
-        lblRecord = (TextView) findViewById(R.id.lblRecord);
-        lblName = (TextView) findViewById(R.id.txtName);
+        btnSave = findViewById(R.id.btnSave);
+        btnRecord = findViewById(R.id.btnRecord);
+        lblRecord = findViewById(R.id.lblRecord);
+        txtName = findViewById(R.id.txtName);
+        cbRecord = findViewById(R.id.cbRecord);
 
         btnRecord.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -61,6 +64,24 @@ public class crudActivity extends MainActivity{
         btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 lblRecord.setText("Recording saved");
+
+                String name = txtName.getText().toString();
+                Boolean favorite = cbRecord.isChecked();
+                String path = mFileName;
+
+                if (favorite) {
+                    favoriteAsInt = 1;
+                }
+                else {
+                    favoriteAsInt = 0;
+                }
+
+                if (name.length() != 0) {
+                    AddData(name, path, favoriteAsInt);
+                    txtName.setText("");
+                } else {
+                    toastMessage("put something in the field");
+                }
             }
         });
     }
@@ -69,7 +90,7 @@ public class crudActivity extends MainActivity{
 
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
-        mFileName += "/" + lblName.getText().toString() + ".3gp";
+        mFileName += "/" + txtName.getText().toString() + ".3gp";
 
 
         mRecorder = new MediaRecorder();
@@ -98,6 +119,21 @@ public class crudActivity extends MainActivity{
         }
 
         mRecorder = null;
+    }
+
+    public void AddData(String name, String path, int favorite) {
+        Boolean insertData;
+        insertData = mDatabaseHelper.addData(name, path, favorite);
+
+        if (insertData) {
+            toastMessage("Data Inserted");
+        } else {
+            toastMessage("Something went wrong");
+        }
+    }
+
+    private void toastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     //Requesting run-time permissions
