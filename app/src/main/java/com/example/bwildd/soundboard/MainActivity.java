@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private Button test;
     private ListAdapter listAdapter;
-
+    private ArrayList<String> arrayList = new ArrayList<>();
 
 
 
@@ -45,20 +45,8 @@ public class MainActivity extends AppCompatActivity {
         test = findViewById(R.id.btnTest);
         mDatabaseHelper = new DatabaseHelper(this);
 
-        ArrayList<String> arrayList = new ArrayList<>();
-        Cursor data = mDatabaseHelper.getListContents();
 
-        if (data.getCount() == 0) {
-            toastMessage("DB is empty!");
-        } else {
-            while(data.moveToNext()) {
-                arrayList.add(data.getString(1));
-                listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
-                listView.setAdapter(listAdapter);
-
-                registerForContextMenu(listView);
-            }
-        }
+        showOverview();
 
         btnAddAudio.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -76,6 +64,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void showOverview() {
+        Cursor data = mDatabaseHelper.getListContents();
+
+        if (data.getCount() == 0) {
+            toastMessage("DB is empty!");
+        } else {
+            while(data.moveToNext()) {
+                arrayList.add(data.getString(1));
+                listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
+                listView.setAdapter(listAdapter);
+
+                registerForContextMenu(listView);
+            }
+        }
+    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -86,7 +90,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        sreturn super.onContextItemSelected(item);
+        super.onContextItemSelected(item);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        int itemID = 0;
+
+        if(item.getTitle() == "Löschen"){
+
+            int id = info.position;
+            String name = arrayList.get(id);
+            Cursor data = mDatabaseHelper.getItemID(name);
+            while(data.moveToNext()){
+                itemID = data.getInt(0);
+            }
+            mDatabaseHelper.deleteName(itemID, name);
+            //showOverview();
+
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+
+        }
+
+        return true;
     }
 
     private void toastMessage(String message){
