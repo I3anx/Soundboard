@@ -1,20 +1,40 @@
 package com.example.bwildd.soundboard;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.bwildd.soundboard.db.DatabaseHelper;
+
+import java.util.ArrayList;
 
 public class favoriteActivity extends AppCompatActivity {
+
+    private DatabaseHelper mDatabaseHelper;
+    private ListAdapter listAdapter;
+    private ArrayList<String> arrayList = new ArrayList<>();
+    private ListView lvFavorites;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
+        mDatabaseHelper = new DatabaseHelper(this);
+        lvFavorites = findViewById(R.id.lvFavorites);
+        showOverview();
     }
 
     @Override
@@ -40,5 +60,64 @@ public class favoriteActivity extends AppCompatActivity {
         });
 
         return true;
+    }
+
+    public void showOverview() {
+        Cursor data = mDatabaseHelper.getFavoriteSounds();
+
+        if (data.getCount() == 0) {
+            toastMessage("DB is empty!");
+        } else {
+            while (data.moveToNext()) {
+                arrayList.add(data.getString(1));
+                listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
+                lvFavorites.setAdapter(listAdapter);
+                registerForContextMenu(lvFavorites);
+            }
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add("Aus Favoriten löschen");
+        menu.add("Sound löschen");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        super.onContextItemSelected(item);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+
+        int itemID = 0;
+        int id = info.position;
+        String name = arrayList.get(id);
+
+        if (item.getTitle() == "Sound löschen") {
+            Cursor data = mDatabaseHelper.getItemID(name);
+
+            while (data.moveToNext()) {
+                itemID = data.getInt(0);
+            }
+
+            mDatabaseHelper.deleteFromFavorites(itemID, name);
+            Intent intent = new Intent(getApplicationContext(), favoriteActivity.class);
+            startActivity(intent);
+        } else if (item.getTitle() == "Aus Favoriten löschen"){
+
+            Cursor data = mDatabaseHelper.getItemID(name);
+            while (data.moveToNext()){
+                itemID = data.getInt(0);
+            }
+            mDatabaseHelper.removeFavorites(itemID, name);
+            Intent intent = new Intent(getApplicationContext(), favoriteActivity.class);
+            startActivity(intent);
+        }
+        return true;
+    }
+
+    private void toastMessage (String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

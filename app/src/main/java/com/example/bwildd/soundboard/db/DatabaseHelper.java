@@ -56,9 +56,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Cursor getListContents(){
+    public Cursor getAllSounds(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+
+    public Cursor getFavoriteSounds(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL4 + " = 1;";
         Cursor data = db.rawQuery(query, null);
         return data;
     }
@@ -77,9 +84,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    public void deleteFromFavorites(int id, String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL1 + " = " + id + " AND " + COL2 + " = '" + name + "' AND " + COL4 + " = 1;";
+        Cursor data = db.rawQuery(query, null);
+        db.execSQL(query);
+}
+
     public void updateFavorites(int id, String name) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "UPDATE " + TABLE_NAME + " SET " + COL4 + " = 1 WHERE " + COL1 + " = " + id + " AND " + COL2 + " = " + id + ";";
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL4 + " = 1 WHERE " + COL1 + " = " + id + " AND " + COL2 + " = '" + name + "';";
+        Cursor data = db.rawQuery(query, null);
+        db.execSQL(query);
+    }
+
+    public void removeFavorites(int id, String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL4 + " = 0 WHERE " + COL1 + " = " + id + " AND " + COL2 + " = '" + name + "';";
         Cursor data = db.rawQuery(query, null);
         db.execSQL(query);
     }
