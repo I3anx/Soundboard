@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.File;
+import java.lang.annotation.Target;
+import java.sql.Blob;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
@@ -16,6 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL2 = "name";
     private static final String COL3 = "file";
     private static final String COL4 = "favorite";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null,1);
@@ -41,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL3, path);
         contentValues.put(COL4, favorite);
 
-        long result = db.insert(TABLE_NAME, null, contentValues);
+        long result = db.insert(TABLE_NAME, null, contentValues );
 
         if (result == -1){
             return false;
@@ -68,6 +73,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void deleteName(int id, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL1 + " = " + id + " AND " + COL2 + " = '" + name + "';";
+        Cursor data = db.rawQuery(query, null);
+        db.execSQL(query);
+    }
+
+    public void updateFavorites(int id, String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL4 + " = 1 WHERE " + COL1 + " = " + id + " AND " + COL2 + " = " + id + ";";
         Cursor data = db.rawQuery(query, null);
         db.execSQL(query);
     }

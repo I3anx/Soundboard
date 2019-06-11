@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Button test;
     private ListAdapter listAdapter;
     private ArrayList<String> arrayList = new ArrayList<>();
+    private crudActivity crud;
 
 
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         test = findViewById(R.id.btnTest);
         mDatabaseHelper = new DatabaseHelper(this);
+        crudActivity crud = new crudActivity();
 
 
         showOverview();
@@ -58,7 +60,18 @@ public class MainActivity extends AppCompatActivity {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadAudio();
+                //String fileName = crudActivity.getName();
+                //loadAudio(fileName);
+
+
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name  = listAdapter.getItem(position).toString();
+                loadAudio(name);
 
             }
         });
@@ -80,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -94,20 +108,27 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         int itemID = 0;
+        int id = info.position;
+        String name = arrayList.get(id);
 
         if(item.getTitle() == "Löschen"){
 
-            int id = info.position;
-            String name = arrayList.get(id);
+
             Cursor data = mDatabaseHelper.getItemID(name);
             while(data.moveToNext()){
                 itemID = data.getInt(0);
             }
             mDatabaseHelper.deleteName(itemID, name);
-            //showOverview();
 
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
+
+        } else if (item.getTitle() == "Zu Favoriten hinzufügen") {
+            Cursor data = mDatabaseHelper.getItemID(name);
+            while (data.moveToNext()){
+                itemID = data.getInt(0);
+            }
+            mDatabaseHelper.updateFavorites(itemID, name);
 
         }
 
@@ -121,10 +142,9 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mPlayer;
 
     // Your Media Player will be called with Audio file here..
-    private void loadAudio(){
+    private File loadAudio(String fileName){
 
-        String fileName = "David.3gp";
-        String completePath = getExternalCacheDir().getAbsolutePath() + "/" + fileName;
+        String completePath = getExternalCacheDir().getAbsolutePath() + "/" + fileName + ".3gp";
 
         File file = new File(completePath);
 
@@ -150,5 +170,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
         }
         mPlayer.start();
+        return file;
     }
+
 }

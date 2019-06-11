@@ -33,6 +33,7 @@ public class crudActivity extends MainActivity{
     private CheckBox cbRecord;
     private String mFileName;
     private int favoriteAsInt;
+    private String name;
     public static final  String LOG_TAG = "Record_log";
     DatabaseHelper mDatabaseHelper;
 
@@ -71,9 +72,12 @@ public class crudActivity extends MainActivity{
             public void onClick(View v) {
                 lblRecord.setText("Recording saved");
 
-                String name = txtName.getText().toString();
+                name = txtName.getText().toString();
                 Boolean favorite = cbRecord.isChecked();
-                String path = mFileName;
+                String path = getExternalCacheDir().getAbsolutePath() + "/" + mFileName + ".3gp";
+
+
+
 
                 if (favorite) {
                     favoriteAsInt = 1;
@@ -93,6 +97,10 @@ public class crudActivity extends MainActivity{
                 startActivity(intent);
             }
         });
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void startRecording() {
