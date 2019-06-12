@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
-//import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -20,10 +18,8 @@ import android.widget.Toast;
 
 import com.example.bwildd.soundboard.db.DatabaseHelper;
 
-import java.io.File;
-import java.io.IOException;
 
-import static android.app.PendingIntent.getActivity;
+import java.io.IOException;
 
 public class crudActivity extends MainActivity{
 
@@ -36,6 +32,7 @@ public class crudActivity extends MainActivity{
     private String mFileName;
     private int favoriteAsInt;
     private String name;
+    public boolean granted;
     public static final  String LOG_TAG = "Record_log";
     DatabaseHelper mDatabaseHelper;
 
@@ -50,33 +47,40 @@ public class crudActivity extends MainActivity{
         lblRecord = findViewById(R.id.lblRecord);
         txtName = findViewById(R.id.txtName);
         cbRecord = findViewById(R.id.cbRecord);
+        requestAudioPermissions();
 
-        btnRecord.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+        if (granted) {
+            btnRecord.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent motionEvent) {
 
-                    requestAudioPermissions();
-                    lblRecord.setText("Recording started...");
 
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
-                    stopRecording();
-                    lblRecord.setText("Recording finished...");
+                        startRecording();
+                        lblRecord.setText("Aufnahme gestartet");
 
+                    } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+
+                        stopRecording();
+                        lblRecord.setText("Aufnahme beendet");
+
+                    }
+                    return false;
                 }
-
-                return false;
-            }
-        });
+            });
+        } else {
+            lblRecord.setText("Bitte gewähren Sie zugriff auf Ihr Mikrofon");
+            requestAudioPermissions();
+        }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                lblRecord.setText("Recording saved");
+                lblRecord.setText("Aufnahme gespeichert");
 
                 name = txtName.getText().toString();
                 Boolean favorite = cbRecord.isChecked();
-                String path = getDir("sounds", MODE_PRIVATE).getAbsolutePath() + "/" + mFileName + ".3gp";
+
 
                 if (favorite) {
                     favoriteAsInt = 1;
@@ -85,15 +89,16 @@ public class crudActivity extends MainActivity{
                     favoriteAsInt = 0;
                 }
 
-                if (name.length() != 0) {
-                    AddData(name, path, favoriteAsInt);
-                    txtName.setText("");
+                if (name.length() == 0) {
+                    toastMessage("Name darf nicht leer sein!");
+                } else if (mFileName == null){
+                    toastMessage("Es muss eine Aufnahme gemacht werden!");
                 } else {
-                    toastMessage("put something in the field");
+                    AddData(name, mFileName, favoriteAsInt);
+                    txtName.setText("");
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
                 }
-
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
             }
         });
     }
@@ -107,8 +112,6 @@ public class crudActivity extends MainActivity{
         // Record to the external cache directory for visibility
         mFileName = getDir("sounds", MODE_PRIVATE).getAbsolutePath();
         mFileName += "/" + txtName.getText().toString() + ".3gp";
-
-        File mFile = new File(mFileName);
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -127,14 +130,12 @@ public class crudActivity extends MainActivity{
     }
 
     public void stopRecording() {
-
         try {
             mRecorder.stop();
             mRecorder.release();
         } catch (Exception e ) {
             Log.e(LOG_TAG, e.toString());
         }
-
         mRecorder = null;
     }
 
@@ -154,19 +155,15 @@ public class crudActivity extends MainActivity{
     }
 
     //Requesting run-time permissions
-    //Create placeholder for user's consent to record_audio permission.
-    //This will be used in handling callback
     private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
 
     private void requestAudioPermissions() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
-
             //When permission is not granted by user, show them message why this permission is needed.
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.RECORD_AUDIO)) {
-                Toast.makeText(this, "Please grant permissions to record audio", Toast.LENGTH_LONG).show();
 
                 //Give user option to still opt-in the permissions
                 ActivityCompat.requestPermissions(this,
@@ -184,9 +181,7 @@ public class crudActivity extends MainActivity{
         else if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
-
-            //Go ahead with recording audio now
-            startRecording();
+            granted = true;
         }
     }
 
@@ -198,13 +193,10 @@ public class crudActivity extends MainActivity{
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
-                    startRecording();
+                    //btnRecord.setEnabled(true);
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(this, "Permissions Denied to record audio", Toast.LENGTH_LONG).show();
+                    //btnRecord.setEnabled(false);
                 }
-                return;
             }
         }
     }

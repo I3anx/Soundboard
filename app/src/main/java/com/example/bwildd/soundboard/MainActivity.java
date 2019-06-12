@@ -6,7 +6,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.constraint.ConstraintLayout;
-//import android.support.v7.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -15,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -37,9 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ListAdapter listAdapter;
     private ArrayList<String> arrayList = new ArrayList<>();
-    private crudActivity crud;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnAddAudio = findViewById(R.id.btnAddAudio);
         listView = findViewById(R.id.listView);
-
         mDatabaseHelper = new DatabaseHelper(this);
-        crudActivity crud = new crudActivity();
-
 
         showOverview();
 
@@ -92,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
         return true;
     }
 
@@ -106,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
             textView.setText("Sie haben noch keine Sounds erfasst! Klicken Sie auf das Plus-Symbol in der unteren rechten Ecke.");
             textView.setTextSize(18);
             textView.setPadding(150, 100, 0,0);
-
             layout.addView(textView);
         } else {
             while(data.moveToNext()) {
@@ -138,11 +128,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(item.getTitle() == "Löschen"){
 
-
             Cursor data = mDatabaseHelper.getItemID(name);
             while(data.moveToNext()){
                 itemID = data.getInt(0);
             }
+
             mDatabaseHelper.deleteName(itemID, name);
 
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -154,9 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 itemID = data.getInt(0);
             }
             mDatabaseHelper.updateFavorites(itemID, name);
-
         }
-
         return true;
     }
 
@@ -170,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
     private File loadAudio(String fileName){
 
         String completePath = getDir("sounds", MODE_PRIVATE).getAbsolutePath() + "/" + fileName + ".3gp";
-
         File file = new File(completePath);
 
         Uri myUri1 = Uri.fromFile(file);
@@ -197,5 +184,4 @@ public class MainActivity extends AppCompatActivity {
         mPlayer.start();
         return file;
     }
-
 }

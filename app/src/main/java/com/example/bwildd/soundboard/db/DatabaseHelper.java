@@ -6,13 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.io.File;
-import java.lang.annotation.Target;
-import java.sql.Blob;
-
 public class DatabaseHelper extends SQLiteOpenHelper {
-
-    private static final String TAG = "DatabaseHelper";
 
     private static final String DATABASE_NAME = "Soundboard.db";
     private static final String TABLE_NAME = "soundboard";
@@ -20,7 +14,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL2 = "name";
     private static final String COL3 = "file";
     private static final String COL4 = "favorite";
-
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null,1);

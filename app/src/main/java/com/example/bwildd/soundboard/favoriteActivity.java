@@ -2,11 +2,13 @@ package com.example.bwildd.soundboard;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.constraint.ConstraintLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,8 @@ import android.widget.Toast;
 
 import com.example.bwildd.soundboard.db.DatabaseHelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class favoriteActivity extends AppCompatActivity {
@@ -29,6 +33,7 @@ public class favoriteActivity extends AppCompatActivity {
     private ListAdapter listAdapter;
     private ArrayList<String> arrayList = new ArrayList<>();
     private ListView lvFavorites;
+    private MediaPlayer mPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,14 @@ public class favoriteActivity extends AppCompatActivity {
         mDatabaseHelper = new DatabaseHelper(this);
         lvFavorites = findViewById(R.id.lvFavorites);
         showOverview();
+
+        lvFavorites.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name  = listAdapter.getItem(position).toString();
+                loadAudio(name);
+            }
+        });
     }
 
     @Override
@@ -60,7 +73,6 @@ public class favoriteActivity extends AppCompatActivity {
                 }
             }
         });
-
         return true;
     }
 
@@ -74,7 +86,6 @@ public class favoriteActivity extends AppCompatActivity {
             textView.setText("Sie haben noch keine Sounds erfasst! Klicken Sie auf das Plus-Symbol in der unteren rechten Ecke.");
             textView.setTextSize(18);
             textView.setPadding(150, 100, 0,0);
-
             layout.addView(textView);
 
         } else {
@@ -99,7 +110,6 @@ public class favoriteActivity extends AppCompatActivity {
         super.onContextItemSelected(item);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-
         int itemID = 0;
         int id = info.position;
         String name = arrayList.get(id);
@@ -114,6 +124,7 @@ public class favoriteActivity extends AppCompatActivity {
             mDatabaseHelper.deleteFromFavorites(itemID, name);
             Intent intent = new Intent(getApplicationContext(), favoriteActivity.class);
             startActivity(intent);
+
         } else if (item.getTitle() == "Aus Favoriten löschen"){
 
             Cursor data = mDatabaseHelper.getItemID(name);
@@ -129,5 +140,34 @@ public class favoriteActivity extends AppCompatActivity {
 
     private void toastMessage (String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    private File loadAudio(String fileName){
+
+        String completePath = getDir("sounds", MODE_PRIVATE).getAbsolutePath() + "/" + fileName + ".3gp";
+        File file = new File(completePath);
+
+        Uri myUri1 = Uri.fromFile(file);
+        mPlayer = new MediaPlayer();
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+        try {
+            mPlayer.setDataSource(getApplicationContext(), myUri1);
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (SecurityException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (IllegalStateException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } try {
+            mPlayer.prepare();
+        } catch (IllegalStateException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        }
+        mPlayer.start();
+        return file;
     }
 }
