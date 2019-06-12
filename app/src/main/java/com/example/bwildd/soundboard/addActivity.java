@@ -155,6 +155,8 @@ public class addActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
+                btnRecord.setEnabled(false);
+                lblRecord.setText("Sie können keine Aufnahme tätigen, da Sie die Berechtigungen abgelehnt haben!");
 
             //When permission is not granted by user, show them message why this permission is needed.
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -178,7 +180,7 @@ public class addActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED) {
 
             //Go ahead with recording audio now
-            toastMessage("OHHHH REALLLY");
+            btnRecord.setEnabled(true);
         }
     }
 
@@ -192,7 +194,6 @@ public class addActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
                     //recordAudio();
-                    toastMessage("OHHHH EVENTUALY");
                     Intent intent = new Intent(getApplicationContext(), addActivity.class);
                     startActivity(intent);
                 } else {
