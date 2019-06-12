@@ -6,7 +6,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bwildd.soundboard.db.DatabaseHelper;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +33,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     DatabaseHelper mDatabaseHelper;
-    private Button btnAddAudio;
+    private FloatingActionButton btnAddAudio;
     private ListView listView;
     private ListAdapter listAdapter;
     private ArrayList<String> arrayList = new ArrayList<>();
@@ -99,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (data.getCount() == 0) {
             ConstraintLayout layout;
-            layout = findViewById(R.id.constraintLayout);
+            layout = findViewById(R.id.mainLayout);
             TextView textView = new TextView(this);
             textView.setText("Sie haben noch keine Sounds erfasst! Klicken Sie auf das Plus-Symbol in der unteren rechten Ecke.");
             textView.setTextSize(18);
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
     // Your Media Player will be called with Audio file here..
     private File loadAudio(String fileName){
 
-        String completePath = getExternalCacheDir().getAbsolutePath() + "/" + fileName + ".3gp";
+        String completePath = getDir("sounds", MODE_PRIVATE).getAbsolutePath() + "/" + fileName + ".3gp";
 
         File file = new File(completePath);
 

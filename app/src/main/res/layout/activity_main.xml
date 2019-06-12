@@ -2,31 +2,50 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
+    <!--
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnAddAudio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add"
+        android:clickable="true"
+        app:srcCompat="@drawable/ic_action_add"
+        android:focusable="true" />
+        -->
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAddAudio"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:baselineAlignBottom="false"
+        android:clickable="true"
+        android:drawingCacheQuality="auto"
+        android:focusable="true"
+        android:src="@drawable/ic_action_add"
+        app:backgroundTint="@android:color/white"
+        app:maxImageSize="55dp"
+        app:useCompatPadding="true"
+        tools:ignore="VectorDrawableCompat"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.945"
+        app:layout_constraintHorizontal_bias="0.952"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.969" />
+        app:layout_constraintVertical_bias="0.99" />
 
     <ListView
         android:id="@+id/listView"
-        android:layout_width="368dp"
-        android:layout_height="462dp"
+        android:layout_width="384dp"
+        android:layout_height="566dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintVertical_bias="0.0"></ListView>
 
 </android.support.constraint.ConstraintLayout>
