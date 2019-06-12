@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
 import android.view.MotionEvent;
@@ -21,7 +22,7 @@ import com.example.bwildd.soundboard.db.DatabaseHelper;
 
 import java.io.IOException;
 
-public class crudActivity extends MainActivity{
+public class addActivity extends AppCompatActivity {
 
     private Button btnSave;
     private Button btnRecord;
@@ -32,7 +33,6 @@ public class crudActivity extends MainActivity{
     private String mFileName;
     private int favoriteAsInt;
     private String name;
-    public boolean granted;
     public static final  String LOG_TAG = "Record_log";
     DatabaseHelper mDatabaseHelper;
 
@@ -41,38 +41,34 @@ public class crudActivity extends MainActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
+
         mDatabaseHelper = new DatabaseHelper(this);
         btnSave = findViewById(R.id.btnSave);
         btnRecord = findViewById(R.id.btnRecord);
         lblRecord = findViewById(R.id.lblRecord);
         txtName = findViewById(R.id.txtName);
         cbRecord = findViewById(R.id.cbRecord);
+
+
+
         requestAudioPermissions();
 
-        if (granted) {
-            btnRecord.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent motionEvent) {
+        btnRecord.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
+                    startRecording();
+                    lblRecord.setText("Aufnahme gestartet");
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 
-                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-
-                        startRecording();
-                        lblRecord.setText("Aufnahme gestartet");
-
-                    } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-
-                        stopRecording();
-                        lblRecord.setText("Aufnahme beendet");
-
-                    }
-                    return false;
+                    stopRecording();
+                    lblRecord.setText("Aufnahme beendet");
                 }
-            });
-        } else {
-            lblRecord.setText("Bitte gewähren Sie zugriff auf Ihr Mikrofon");
-            requestAudioPermissions();
-        }
+                return false;
+            }
+        });
+
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -153,14 +149,13 @@ public class crudActivity extends MainActivity{
     private void toastMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
-    //Requesting run-time permissions
     private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
 
     private void requestAudioPermissions() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
+
             //When permission is not granted by user, show them message why this permission is needed.
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.RECORD_AUDIO)) {
@@ -181,22 +176,31 @@ public class crudActivity extends MainActivity{
         else if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
-            granted = true;
+
+            //Go ahead with recording audio now
+            toastMessage("OHHHH REALLLY");
         }
     }
 
     //Handling callback
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_RECORD_AUDIO: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
-                    //btnRecord.setEnabled(true);
+                    //recordAudio();
+                    toastMessage("OHHHH EVENTUALY");
+                    Intent intent = new Intent(getApplicationContext(), addActivity.class);
+                    startActivity(intent);
                 } else {
-                    //btnRecord.setEnabled(false);
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "Permissions Denied to record audio", Toast.LENGTH_LONG).show();
                 }
+                return;
             }
         }
     }

@@ -17,4 +17,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAddAudio"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:baselineAlignBottom="false"
+        android:clickable="true"
+        android:drawingCacheQuality="auto"
+        android:focusable="true"
+        android:src="@drawable/ic_action_add"
+        app:backgroundTint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.952"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.99"
+        app:maxImageSize="55dp"
+        app:useCompatPadding="true"
+        tools:ignore="VectorDrawableCompat" />
+
 </android.support.constraint.ConstraintLayout>

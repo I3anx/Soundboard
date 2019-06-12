@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnAddAudio.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), crudActivity.class);
+                Intent intent = new Intent(getApplicationContext(), addActivity.class);
                 startActivity(intent);
             }
         });

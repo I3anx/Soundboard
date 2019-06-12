@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bwildd.soundboard.db.DatabaseHelper;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class favoriteActivity extends AppCompatActivity {
     private ArrayList<String> arrayList = new ArrayList<>();
     private ListView lvFavorites;
     private MediaPlayer mPlayer;
+    private FloatingActionButton btnAddAudio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class favoriteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favorite);
         mDatabaseHelper = new DatabaseHelper(this);
         lvFavorites = findViewById(R.id.lvFavorites);
+        btnAddAudio = findViewById(R.id.btnAddAudio);
         showOverview();
 
         lvFavorites.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -48,6 +51,13 @@ public class favoriteActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String name  = listAdapter.getItem(position).toString();
                 loadAudio(name);
+            }
+        });
+
+        btnAddAudio.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), addActivity.class);
+                startActivity(intent);
             }
         });
     }
