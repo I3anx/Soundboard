@@ -2,9 +2,11 @@ package com.example.bwildd.soundboard;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,7 +68,15 @@ public class favoriteActivity extends AppCompatActivity {
         Cursor data = mDatabaseHelper.getFavoriteSounds();
 
         if (data.getCount() == 0) {
-            toastMessage("DB is empty!");
+            ConstraintLayout layout;
+            layout = findViewById(R.id.constraintLayout);
+            TextView textView = new TextView(this);
+            textView.setText("Sie haben noch keine Sounds erfasst! Klicken Sie auf das Plus-Symbol in der unteren rechten Ecke.");
+            textView.setTextSize(18);
+            textView.setPadding(150, 100, 0,0);
+
+            layout.addView(textView);
+
         } else {
             while (data.moveToNext()) {
                 arrayList.add(data.getString(1));

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper mDatabaseHelper;
     private Button btnAddAudio;
     private ListView listView;
-    private Button test;
     private ListAdapter listAdapter;
     private ArrayList<String> arrayList = new ArrayList<>();
     private crudActivity crud;
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnAddAudio = findViewById(R.id.btnAddAudio);
         listView = findViewById(R.id.listView);
-        test = findViewById(R.id.btnTest);
+
         mDatabaseHelper = new DatabaseHelper(this);
         crudActivity crud = new crudActivity();
 
@@ -57,16 +57,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), crudActivity.class);
                 startActivity(intent);
-            }
-        });
-
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //String fileName = crudActivity.getName();
-                //loadAudio(fileName);
-
-
             }
         });
 
@@ -108,7 +98,14 @@ public class MainActivity extends AppCompatActivity {
         Cursor data = mDatabaseHelper.getAllSounds();
 
         if (data.getCount() == 0) {
-            toastMessage("DB is empty!");
+            ConstraintLayout layout;
+            layout = findViewById(R.id.constraintLayout);
+            TextView textView = new TextView(this);
+            textView.setText("Sie haben noch keine Sounds erfasst! Klicken Sie auf das Plus-Symbol in der unteren rechten Ecke.");
+            textView.setTextSize(18);
+            textView.setPadding(150, 100, 0,0);
+
+            layout.addView(textView);
         } else {
             while(data.moveToNext()) {
                 arrayList.add(data.getString(1));

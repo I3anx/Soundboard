@@ -76,9 +76,6 @@ public class crudActivity extends MainActivity{
                 Boolean favorite = cbRecord.isChecked();
                 String path = getExternalCacheDir().getAbsolutePath() + "/" + mFileName + ".3gp";
 
-
-
-
                 if (favorite) {
                     favoriteAsInt = 1;
                 }
